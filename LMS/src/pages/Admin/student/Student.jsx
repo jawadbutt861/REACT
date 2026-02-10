@@ -3,11 +3,18 @@ import {db} from '../../../config/firebase/firebaseconfig'
 import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { Link } from 'react-router';
 import { showSuccess, showError } from '../../../utils/toast';
+import { cascadeDeleteStudent, getDeletionImpact, generateDeletionMessage } from '../../../utils/cascadeDelete';
+import { ConfirmDialog } from '../../../components/UI';
 
 const Student = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const [deleteDialog, setDeleteDialog] = useState({
+    isOpen: false,
+    student: null,
+    impact: null
+  });
 
   useEffect(() => {
     getData();
@@ -33,38 +40,43 @@ const Student = () => {
   }
 
   const deleteStudent = async (studentId, studentName) => {
-    if (window.confirm(`Are you sure you want to delete "${studentName}"? This will also remove all their course assignments.`)) {
-      setLoading(true);
-      try {
-        // Delete student document
-        await deleteDoc(doc(db, "user", studentId));
-        
-        // Also delete assigned courses for this student
-        const studentUid = data.find(s => s.id === studentId)?.uid;
-        if (studentUid) {
-          const assignedCoursesQuery = query(
-            collection(db, "assignedCourses"), 
-            where("studentId", "==", studentUid)
-          );
-          const assignedCoursesSnapshot = await getDocs(assignedCoursesQuery);
-          
-          // Delete all assigned courses
-          const deletePromises = assignedCoursesSnapshot.docs.map(courseDoc => 
-            deleteDoc(doc(db, "assignedCourses", courseDoc.id))
-          );
-          await Promise.all(deletePromises);
-        }
-        
-        showSuccess(`Student "${studentName}" deleted successfully!`);
-        getData();
-      } catch (error) {
-        console.error("Error deleting student:", error);
-        showError("Failed to delete student. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+    const student = data.find(s => s.id === studentId);
+    if (!student) {
+      showError("Student not found");
+      return;
     }
-  }
+
+    try {
+      // Get deletion impact
+      const impact = await getDeletionImpact('student', studentId, student.uid);
+      
+      // Show confirmation dialog
+      setDeleteDialog({
+        isOpen: true,
+        student: { id: studentId, name: studentName, uid: student.uid },
+        impact
+      });
+    } catch (error) {
+      console.error("Error getting deletion impact:", error);
+      showError("Failed to analyze deletion impact. Please try again.");
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    const { student } = deleteDialog;
+    
+    try {
+      // Perform cascade deletion
+      await cascadeDeleteStudent(student.id, student.uid);
+      
+      showSuccess(`Student "${student.name}" and all related data deleted successfully!`);
+      getData(); // Refresh the list
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      showError("Failed to delete student. Please try again.");
+      throw error; // Re-throw to let ConfirmDialog handle loading state
+    }
+  };
 
   const StudentCard = ({ student }) => (
     <div className="bg-white rounded-xl shadow-sm border p-6 card-hover" style={{ borderColor: 'var(--border)' }}>
@@ -201,6 +213,20 @@ const Student = () => {
             </div>
           </>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <ConfirmDialog
+          isOpen={deleteDialog.isOpen}
+          onClose={() => setDeleteDialog({ isOpen: false, student: null, impact: null })}
+          onConfirm={handleConfirmDelete}
+          title="Delete Student"
+          message={deleteDialog.impact && deleteDialog.student 
+            ? generateDeletionMessage(deleteDialog.impact, deleteDialog.student.name)
+            : "Are you sure you want to delete this student?"
+          }
+          confirmText="Delete Student"
+          type="danger"
+        />
       </div>
     </div>
   )

@@ -1,120 +1,143 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { addTodo, getTodos, updateTodo, deleteTodo } from '../services/todoService';
-import TodoForm from './TodoForm';
-import TodoItem from './TodoItem';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { 
+  collection, 
+  query, 
+  where, 
+  onSnapshot, 
+  doc, 
+  updateDoc, 
+  deleteDoc 
+} from 'firebase/firestore';
+import { db, auth } from '../config/firebase/firebaseconfig';
+import '../index.css';
 
 const TodoList = () => {
-  const { currentUser, logout } = useAuth();
   const [todos, setTodos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const loadTodos = useCallback(async () => {
-    try {
-      setLoading(true);
-      const userTodos = await getTodos(currentUser.uid);
-      setTodos(userTodos);
-    } catch (error) {
-      setError('Failed to load todos: ' + error.message);
-    }
-    setLoading(false);
-  }, [currentUser]);
+  const [editingId, setEditingId] = useState(null);
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
   useEffect(() => {
-    if (currentUser) {
-      loadTodos();
-    }
-  }, [currentUser, loadTodos]);
+    if (!auth.currentUser) return;
 
-  const handleAddTodo = async (todoData) => {
+    const q = query(
+      collection(db, 'todos'),
+      where('userId', '==', auth.currentUser.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const todosData = [];
+      querySnapshot.forEach((doc) => {
+        todosData.push({ id: doc.id, ...doc.data() });
+      });
+      setTodos(todosData.sort((a, b) => b.createdAt - a.createdAt));
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleEdit = (todo) => {
+    setEditingId(todo.id);
+    setValue('title', todo.title);
+    setValue('description', todo.description);
+  };
+
+  const handleUpdate = async (data) => {
     try {
-      const todoId = await addTodo(currentUser.uid, todoData);
-      const newTodo = {
-        id: todoId,
-        ...todoData,
-        userId: currentUser.uid,
-        createdAt: new Date(),
+      const todoRef = doc(db, 'todos', editingId);
+      await updateDoc(todoRef, {
+        title: data.title,
+        description: data.description,
         updatedAt: new Date()
-      };
-      setTodos([newTodo, ...todos]);
+      });
+      setEditingId(null);
+      reset();
     } catch (error) {
-      setError('Failed to add todo: ' + error.message);
+      console.error('Error updating todo:', error);
+      alert('Error updating todo');
     }
   };
 
-  const handleUpdateTodo = async (todoId, updateData) => {
-    try {
-      await updateTodo(todoId, updateData);
-      setTodos(todos.map(todo => 
-        todo.id === todoId 
-          ? { ...todo, ...updateData, updatedAt: new Date() }
-          : todo
-      ));
-    } catch (error) {
-      setError('Failed to update todo: ' + error.message);
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this todo?')) {
+      try {
+        await deleteDoc(doc(db, 'todos', id));
+      } catch (error) {
+        console.error('Error deleting todo:', error);
+        alert('Error deleting todo');
+      }
     }
   };
 
-  const handleDeleteTodo = async (todoId) => {
-    try {
-      await deleteTodo(todoId);
-      setTodos(todos.filter(todo => todo.id !== todoId));
-    } catch (error) {
-      setError('Failed to delete todo: ' + error.message);
-    }
+  const cancelEdit = () => {
+    setEditingId(null);
+    reset();
   };
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      setError('Failed to log out: ' + error.message);
-    }
-  };
-
-  if (loading) {
-    return <div className="loading">Loading your todos...</div>;
-  }
 
   return (
-    <div className="todo-container">
-      <div className="todo-header">
-        <h1 className="todo-title">My Todos</h1>
-        <div className="user-info">
-          <span className="user-email">Welcome, {currentUser.email}</span>
-          <button 
-            onClick={handleLogout}
-            className="btn-logout"
-          >
-            Logout
-          </button>
+    <div>
+      <h3>Your Todos</h3>
+      
+      {editingId && (
+        <div className="card edit-form">
+          <h4>Edit Todo</h4>
+          <form onSubmit={handleSubmit(handleUpdate)}>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Todo Title"
+                {...register('title', { 
+                  required: 'Title is required',
+                  minLength: {
+                    value: 3,
+                    message: 'Title must be at least 3 characters'
+                  }
+                })}
+              />
+              {errors.title && <p className="error">{errors.title.message}</p>}
+            </div>
+            
+            <div className="form-group">
+              <textarea
+                placeholder="Todo Description"
+                {...register('description', { 
+                  required: 'Description is required',
+                  minLength: {
+                    value: 5,
+                    message: 'Description must be at least 5 characters'
+                  }
+                })}
+              />
+              {errors.description && <p className="error">{errors.description.message}</p>}
+            </div>
+            
+            <div className="button-group">
+              <button type="submit">Update Todo</button>
+              <button className="btn-secondary" type="button" onClick={cancelEdit}>Cancel</button>
+            </div>
+          </form>
         </div>
-      </div>
+      )}
 
-      {error && <div className="error-alert">{error}</div>}
-
-      <div className="todo-form-section">
-        <h2 className="section-title">Add New Todo</h2>
-        <TodoForm onSubmit={handleAddTodo} />
-      </div>
-
-      <div className="todo-list-section">
-        <h2 className="section-title">
-          Your Todos <span className="todo-count">({todos.length})</span>
-        </h2>
+      <div>
         {todos.length === 0 ? (
           <div className="empty-state">
-            <p>No todos yet. Add your first todo above!</p>
+            <p>No todos yet. Add your first todo!</p>
           </div>
         ) : (
-          todos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onUpdate={handleUpdateTodo}
-              onDelete={handleDeleteTodo}
-            />
+          todos.map((todo) => (
+            <div key={todo.id} className="todo-card">
+              <h4>{todo.title}</h4>
+              <p>{todo.description}</p>
+              <p>Created: {todo.createdAt?.toDate?.()?.toLocaleDateString()}</p>
+              {todo.updatedAt && (
+                <p>Updated: {todo.updatedAt?.toDate?.()?.toLocaleDateString()}</p>
+              )}
+              <div className="todo-actions">
+                <button className="btn-primary" onClick={() => handleEdit(todo)}>Edit</button>
+                <button className="btn-danger" onClick={() => handleDelete(todo.id)}>Delete</button>
+              </div>
+            </div>
           ))
         )}
       </div>

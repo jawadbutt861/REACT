@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { db } from '../../config/firebase/firebaseconfig'
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
-import { Card, Button } from '../../components/UI';
+import { Card, Button, ReadMore } from '../../components/UI';
 import { showSuccess, showError, showWarning } from '../../utils/toast';
+import { initializeCourseProgress } from '../../utils/progressTracker';
 
 const AssignCourse = () => {
   // States
@@ -13,6 +14,18 @@ const AssignCourse = () => {
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [assignedCourses, setAssignedCourses] = useState([]);
+  
+  // Search states
+  const [studentSearch, setStudentSearch] = useState('');
+  const [courseSearch, setCourseSearch] = useState('');
+  const [showStudentDropdown, setShowStudentDropdown] = useState(false);
+  const [showCourseDropdown, setShowCourseDropdown] = useState(false);
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  
+  // Refs for dropdown management
+  const studentDropdownRef = useRef(null);
+  const courseDropdownRef = useRef(null);
 
   // Fetch students from Firestore
   const getStudents = async () => {
@@ -87,7 +100,76 @@ const AssignCourse = () => {
     loadData();
   }, []);
 
-  // Check if course is already assigned to student
+  // Filter students based on search
+  useEffect(() => {
+    if (studentSearch.trim() === '') {
+      setFilteredStudents(students);
+    } else {
+      const filtered = students.filter(student => 
+        student.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
+        student.email.toLowerCase().includes(studentSearch.toLowerCase())
+      );
+      setFilteredStudents(filtered);
+    }
+  }, [students, studentSearch]);
+
+  // Filter courses based on search
+  useEffect(() => {
+    if (courseSearch.trim() === '') {
+      setFilteredCourses(courses);
+    } else {
+      const filtered = courses.filter(course => 
+        course.name.toLowerCase().includes(courseSearch.toLowerCase()) ||
+        course.duration.toLowerCase().includes(courseSearch.toLowerCase())
+      );
+      setFilteredCourses(filtered);
+    }
+  }, [courses, courseSearch]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (studentDropdownRef.current && !studentDropdownRef.current.contains(event.target)) {
+        setShowStudentDropdown(false);
+      }
+      if (courseDropdownRef.current && !courseDropdownRef.current.contains(event.target)) {
+        setShowCourseDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Handle student selection
+  const handleStudentSelect = (student) => {
+    setSelectedStudent(student.id);
+    setStudentSearch(`${student.name} (${student.email})`);
+    setShowStudentDropdown(false);
+  };
+
+  // Handle course selection
+  const handleCourseSelect = (course) => {
+    setSelectedCourse(course.id);
+    setCourseSearch(`${course.name} (${course.duration})`);
+    setShowCourseDropdown(false);
+  };
+
+  // Clear student selection
+  const clearStudentSelection = () => {
+    setSelectedStudent('');
+    setStudentSearch('');
+    setShowStudentDropdown(false);
+  };
+
+  // Clear course selection
+  const clearCourseSelection = () => {
+    setSelectedCourse('');
+    setCourseSearch('');
+    setShowCourseDropdown(false);
+  };
   const checkDuplicateAssignment = async (studentUid, courseId) => {
     const q = query(
       collection(db, "assignedCourses"),
@@ -135,11 +217,16 @@ const AssignCourse = () => {
         assignedDate: new Date().toISOString()
       });
 
+      // Initialize course progress
+      await initializeCourseProgress(student.uid, selectedCourse, course.name);
+
       showSuccess(`${course.name} assigned to ${student.name} successfully!`);
       
       // Reset form
       setSelectedStudent('');
       setSelectedCourse('');
+      setStudentSearch('');
+      setCourseSearch('');
       
       // Refresh assigned courses list
       getAssignedCourses();
@@ -187,24 +274,74 @@ const AssignCourse = () => {
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-body)' }}>
                       Select Student <span style={{ color: 'var(--error)' }}>*</span>
                     </label>
-                    <select 
-                      value={selectedStudent}
-                      onChange={(e) => setSelectedStudent(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border focus-ring transition-colors"
-                      style={{ 
-                        borderColor: 'var(--border)',
-                        color: 'var(--text-body)'
-                      }}
-                      required
-                      disabled={loading}
-                    >
-                      <option value="">-- Choose a student --</option>
-                      {students.map(student => (
-                        <option key={student.id} value={student.id}>
-                          {student.name} ({student.email})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative" ref={studentDropdownRef}>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={studentSearch}
+                          onChange={(e) => {
+                            setStudentSearch(e.target.value);
+                            setShowStudentDropdown(true);
+                            if (e.target.value === '') {
+                              setSelectedStudent('');
+                            }
+                          }}
+                          onFocus={() => setShowStudentDropdown(true)}
+                          placeholder="Search students by name or email..."
+                          className="w-full px-4 py-3 pr-10 rounded-lg border focus-ring transition-colors"
+                          style={{ 
+                            borderColor: 'var(--border)',
+                            color: 'var(--text-body)'
+                          }}
+                          disabled={loading}
+                        />
+                        {selectedStudent && (
+                          <button
+                            type="button"
+                            onClick={clearStudentSelection}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                        {!selectedStudent && (
+                          <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                        )}
+                      </div>
+                      
+                      {showStudentDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: 'var(--border)' }}>
+                          {filteredStudents.length === 0 ? (
+                            <div className="px-4 py-3 text-sm" style={{ color: 'var(--text-muted)' }}>
+                              {studentSearch ? 'No students found' : 'No students available'}
+                            </div>
+                          ) : (
+                            filteredStudents.map(student => (
+                              <button
+                                key={student.id}
+                                type="button"
+                                onClick={() => handleStudentSelect(student)}
+                                className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
+                                style={{ 
+                                  backgroundColor: selectedStudent === student.id ? 'var(--primary)10' : 'transparent'
+                                }}
+                              >
+                                <div className="font-medium" style={{ color: 'var(--text-heading)' }}>
+                                  {student.name}
+                                </div>
+                                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                                  {student.email}
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
                     {students.length === 0 && (
                       <p className="mt-1 text-sm" style={{ color: 'var(--error)' }}>
                         No students available. Please add students first.
@@ -217,24 +354,74 @@ const AssignCourse = () => {
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-body)' }}>
                       Select Course <span style={{ color: 'var(--error)' }}>*</span>
                     </label>
-                    <select 
-                      value={selectedCourse}
-                      onChange={(e) => setSelectedCourse(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border focus-ring transition-colors"
-                      style={{ 
-                        borderColor: 'var(--border)',
-                        color: 'var(--text-body)'
-                      }}
-                      required
-                      disabled={loading}
-                    >
-                      <option value="">-- Choose a course --</option>
-                      {courses.map(course => (
-                        <option key={course.id} value={course.id}>
-                          {course.name} ({course.duration})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative" ref={courseDropdownRef}>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={courseSearch}
+                          onChange={(e) => {
+                            setCourseSearch(e.target.value);
+                            setShowCourseDropdown(true);
+                            if (e.target.value === '') {
+                              setSelectedCourse('');
+                            }
+                          }}
+                          onFocus={() => setShowCourseDropdown(true)}
+                          placeholder="Search courses by name or duration..."
+                          className="w-full px-4 py-3 pr-10 rounded-lg border focus-ring transition-colors"
+                          style={{ 
+                            borderColor: 'var(--border)',
+                            color: 'var(--text-body)'
+                          }}
+                          disabled={loading}
+                        />
+                        {selectedCourse && (
+                          <button
+                            type="button"
+                            onClick={clearCourseSelection}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                        {!selectedCourse && (
+                          <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                        )}
+                      </div>
+                      
+                      {showCourseDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto" style={{ borderColor: 'var(--border)' }}>
+                          {filteredCourses.length === 0 ? (
+                            <div className="px-4 py-3 text-sm" style={{ color: 'var(--text-muted)' }}>
+                              {courseSearch ? 'No courses found' : 'No courses available'}
+                            </div>
+                          ) : (
+                            filteredCourses.map(course => (
+                              <button
+                                key={course.id}
+                                type="button"
+                                onClick={() => handleCourseSelect(course)}
+                                className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
+                                style={{ 
+                                  backgroundColor: selectedCourse === course.id ? 'var(--primary)10' : 'transparent'
+                                }}
+                              >
+                                <div className="font-medium" style={{ color: 'var(--text-heading)' }}>
+                                  {course.name}
+                                </div>
+                                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                                  Duration: {course.duration}
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
                     {courses.length === 0 && (
                       <p className="mt-1 text-sm" style={{ color: 'var(--error)' }}>
                         No courses available. Please add courses first.
@@ -253,6 +440,19 @@ const AssignCourse = () => {
                         <p><strong>Email:</strong> {selectedStudentData.email}</p>
                         <p><strong>Course:</strong> {selectedCourseData.name}</p>
                         <p><strong>Duration:</strong> {selectedCourseData.duration}</p>
+                        {selectedCourseData.description && (
+                          <div>
+                            <strong>Description:</strong>
+                            <div className="mt-1">
+                              <ReadMore 
+                                text={selectedCourseData.description}
+                                maxLength={150}
+                                className="text-sm"
+                                style={{ color: 'var(--text-muted)' }}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -277,6 +477,8 @@ const AssignCourse = () => {
                       onClick={() => {
                         setSelectedStudent('');
                         setSelectedCourse('');
+                        setStudentSearch('');
+                        setCourseSearch('');
                       }}
                       disabled={loading}
                       className="flex-1 sm:flex-none"

@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { db } from '../../config/firebase/firebaseconfig'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useSelector } from 'react-redux';
-import { Card, Badge } from '../../components/UI';
+import { Card, Badge, ReadMore } from '../../components/UI';
+import { getStudentProgress, getCourseProgress } from '../../utils/progressTracker';
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [coursesWithProgress, setCoursesWithProgress] = useState([]);
   const [loading, setLoading] = useState(true);
   const { uid } = useSelector((state) => state.auth);
 
@@ -25,7 +27,7 @@ const Profile = () => {
             const user = userSnapshot.docs[0].data();
             setUserData(user);
 
-            // Get enrolled courses
+            // Get enrolled courses with full details
             const coursesQuery = query(
               collection(db, "assignedCourses"),
               where("studentId", "==", uid)
@@ -41,6 +43,47 @@ const Profile = () => {
             });
             
             setEnrolledCourses(courses);
+
+            // Get full course details including descriptions
+            const coursesWithProgressData = await Promise.all(
+              courses.map(async (course) => {
+                // Get progress data
+                const progressData = await getCourseProgress(uid, course.courseId);
+                
+                // Get full course details using document ID
+                try {
+                  const courseDoc = await getDocs(query(collection(db, "course")));
+                  let courseDetails = {};
+                  
+                  courseDoc.forEach((doc) => {
+                    if (doc.id === course.courseId) {
+                      courseDetails = doc.data();
+                    }
+                  });
+                  
+                  return {
+                    ...course,
+                    description: courseDetails.description || 'No description available',
+                    progress: progressData.progress,
+                    status: progressData.status,
+                    completedLessons: progressData.completedLessons?.length || 0,
+                    totalLessons: progressData.totalLessons || 10
+                  };
+                } catch (error) {
+                  console.error('Error fetching course details:', error);
+                  return {
+                    ...course,
+                    description: 'No description available',
+                    progress: progressData.progress,
+                    status: progressData.status,
+                    completedLessons: progressData.completedLessons?.length || 0,
+                    totalLessons: progressData.totalLessons || 10
+                  };
+                }
+              })
+            );
+
+            setCoursesWithProgress(coursesWithProgressData);
           }
         }
       } catch (error) {
@@ -149,7 +192,7 @@ const Profile = () => {
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold" style={{ color: 'var(--success)' }}>
-                      {Math.floor(enrolledCourses.length * 0.6)}
+                      {coursesWithProgress.filter(c => c.status === 'in_progress').length}
                     </p>
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                       In Progress
@@ -239,10 +282,9 @@ const Profile = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {enrolledCourses.map((course, index) => {
-                      const progress = Math.floor(Math.random() * 100); // Mock progress
-                      const isCompleted = progress === 100;
-                      const isInProgress = progress > 0 && progress < 100;
+                    {coursesWithProgress.map((course, index) => {
+                      const isCompleted = course.status === 'completed';
+                      const isInProgress = course.status === 'in_progress';
                       
                       return (
                         <div key={course.id} className="p-4 rounded-lg border card-hover" style={{ borderColor: 'var(--border)' }}>
@@ -251,6 +293,12 @@ const Profile = () => {
                               <h4 className="font-semibold mb-1" style={{ color: 'var(--text-heading)' }}>
                                 {course.courseName}
                               </h4>
+                              <ReadMore 
+                                text={course.description}
+                                maxLength={100}
+                                className="text-sm mb-2"
+                                style={{ color: 'var(--text-muted)' }}
+                              />
                               <p className="text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
                                 Duration: {course.duration}
                               </p>
@@ -268,14 +316,18 @@ const Profile = () => {
                           {/* Progress Bar */}
                           <div className="mt-3">
                             <div className="flex justify-between items-center mb-1">
-                              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Progress</span>
-                              <span className="text-xs font-medium" style={{ color: 'var(--text-body)' }}>{progress}%</span>
+                              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                Progress ({course.completedLessons}/{course.totalLessons} lessons)
+                              </span>
+                              <span className="text-xs font-medium" style={{ color: 'var(--text-body)' }}>
+                                {course.progress}%
+                              </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
                               <div 
                                 className="h-2 rounded-full progress-bar" 
                                 style={{ 
-                                  width: `${progress}%`,
+                                  width: `${course.progress}%`,
                                   backgroundColor: isCompleted ? 'var(--success)' : 'var(--progress)'
                                 }}
                               />

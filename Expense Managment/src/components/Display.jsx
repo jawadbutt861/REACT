@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { deleteExpense, editExpense, clearAllExpenses } from '../config/redux/reducers/formSlice'
 
@@ -129,58 +129,70 @@ const Display = () => {
     )}
     
     {/* Filter Section */}
-    <section className="filter-section">
-      <h3 className="filter-title">Filter & Sort Expenses</h3>
+    <section className="filter-section" aria-labelledby="filter-title">
+      <h3 id="filter-title" className="filter-title">Filter & Sort Expenses</h3>
       
       <div className="filter-controls">
         <div className="filter-group">
-          <label className="form-label">Filter by Category</label>
+          <label htmlFor="category-filter" className="form-label">Filter by Category</label>
           <select 
+            id="category-filter"
             value={filterCategory} 
             onChange={(e) => setFilterCategory(e.target.value)}
             className="filter-select"
+            aria-describedby="category-filter-help"
           >
             <option value="">All Categories</option>
             {uniqueCategories.map((category, index) => (
               <option key={index} value={category}>{category}</option>
             ))}
           </select>
+         
         </div>
         
         <div className="filter-group">
-          <label className="form-label">Filter by Date</label>
+          <label htmlFor="date-filter" className="form-label">Filter by Date</label>
           <input 
+            id="date-filter"
             type="date" 
             value={filterDate} 
             onChange={(e) => setFilterDate(e.target.value)}
             className="filter-input"
+            aria-describedby="date-filter-help"
           />
+         
         </div>
         
         <div className="filter-group">
-          <label className="form-label">Sort by</label>
+          <label htmlFor="sort-by" className="form-label">Sort by</label>
           <select 
+            id="sort-by"
             value={sortBy} 
             onChange={(e) => setSortBy(e.target.value)}
             className="filter-select"
+            aria-describedby="sort-by-help"
           >
             <option value="">No Sorting</option>
             <option value="amount">Amount</option>
             <option value="date">Date</option>
             <option value="name">Name</option>
           </select>
+          
         </div>
         
         <div className="filter-group">
-          <label className="form-label">Order</label>
+          <label htmlFor="sort-order" className="form-label">Order</label>
           <select 
+            id="sort-order"
             value={sortOrder} 
             onChange={(e) => setSortOrder(e.target.value)}
             className="filter-select"
+            aria-describedby="sort-order-help"
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
           </select>
+          
         </div>
       </div>
       
@@ -188,29 +200,34 @@ const Display = () => {
         <button 
           onClick={() => {setFilterCategory(''); setFilterDate(''); setSortBy('')}}
           className="btn btn-clear"
+          aria-describedby="clear-filters-help"
         >
           Clear All Filters
         </button>
+       
         
         {data.length > 0 && (
-          <button 
-            onClick={handleClearAll}
-            className="btn btn-danger"
-          >
-            Clear All Expenses
-          </button>
+          <>
+            <button 
+              onClick={handleClearAll}
+              className="btn btn-danger"
+              aria-describedby="clear-all-help"
+            >
+              Clear All Expenses
+            </button>
+           
+          </>
         )}
         
-        <span className="expense-count">
-          Showing {sortedData.length} of {data.length} expenses
-        </span>
+        
       </div>
     </section>
 
     {/* Expenses List */}
-    <section className="expenses-container">
+    <section className="expenses-container" aria-labelledby="expenses-title">
+      <h3 id="expenses-title" className="sr-only">Your Expenses</h3>
       {sortedData.length === 0 ? (
-        <div className="no-expenses">
+        <div className="no-expenses" role="status" aria-live="polite">
           <h2 className="no-expenses-title">No Expenses Found</h2>
           <p className="no-expenses-subtitle">
             {data.length === 0 
@@ -220,77 +237,111 @@ const Display = () => {
           </p>
         </div>
       ) : (
-        <div className="expenses-grid">
+        <div className="expenses-grid" role="list" aria-label="Expense list">
           {sortedData.map((item, index) => (
-            <div key={index} className="expense-card">
+            <article key={index} className="expense-card" role="listitem">
               {editingIndex === index ? (
                 // Edit Mode
-                <>
+                <div role="form" aria-labelledby={`edit-title-${index}`}>
+                  <h4 id={`edit-title-${index}`} className="sr-only">Edit expense: {item.name}</h4>
                   <div className="edit-form">
                     <div className="form-group">
-                      <label className="form-label">Name</label>
+                      <label htmlFor={`edit-name-${index}`} className="form-label">Name</label>
                       <input 
+                        id={`edit-name-${index}`}
                         value={editForm.name || ''} 
                         onChange={(e) => setEditForm({...editForm, name: e.target.value})}
                         className="edit-input"
                         placeholder="Expense name"
+                        aria-required="true"
                       />
                     </div>
                     
                     <div className="form-group">
-                      <label className="form-label">Amount</label>
+                      <label htmlFor={`edit-amount-${index}`} className="form-label">Amount</label>
                       <input 
+                        id={`edit-amount-${index}`}
                         type="number"
                         step="0.01"
+                        min="0.01"
                         value={editForm.amount || ''} 
                         onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
                         className="edit-input"
                         placeholder="Amount"
+                        aria-required="true"
                       />
                     </div>
                     
                     <div className="form-group">
-                      <label className="form-label">Date</label>
+                      <label htmlFor={`edit-date-${index}`} className="form-label">Date</label>
                       <input 
+                        id={`edit-date-${index}`}
                         type="date"
                         value={editForm.date || ''} 
                         onChange={(e) => setEditForm({...editForm, date: e.target.value})}
                         className="edit-input"
+                        aria-required="true"
                       />
                     </div>
                     
                     <div className="form-group">
-                      <label className="form-label">Category</label>
+                      <label htmlFor={`edit-category-${index}`} className="form-label">Category</label>
                       <input 
+                        id={`edit-category-${index}`}
                         value={editForm.category || ''} 
                         onChange={(e) => setEditForm({...editForm, category: e.target.value})}
                         className="edit-input"
                         placeholder="Category"
+                        aria-required="true"
                       />
                     </div>
                   </div>
                   
                   <div className="expense-actions">
-                    <button onClick={() => handleSaveEdit(index)} className="btn btn-save">
+                    <button 
+                      onClick={() => handleSaveEdit(index)} 
+                      className="btn btn-save"
+                      aria-describedby={`save-help-${index}`}
+                    >
                       Save Changes
                     </button>
-                    <button onClick={handleCancelEdit} className="btn btn-cancel">
+                    <div id={`save-help-${index}`} className="sr-only">
+                      
+                    </div>
+                    <button 
+                      onClick={handleCancelEdit} 
+                      className="btn btn-cancel"
+                      aria-describedby={`cancel-help-${index}`}
+                    >
                       Cancel
                     </button>
+                    <div id={`cancel-help-${index}`} className="sr-only">
+                      
+                    </div>
                   </div>
-                </>
+                </div>
               ) : (
                 // Display Mode
                 <>
-                  <div className="expense-header">
+                  <header className="expense-header">
                     <h3 className="expense-name">{item.name}</h3>
-                    <span className="expense-amount">PKR {parseFloat(item.amount).toFixed(2)}</span>
-                  </div>
+                    <span className="expense-amount" aria-label={`Amount: ${parseFloat(item.amount).toFixed(2)} Pakistani Rupees`}>
+                      PKR {parseFloat(item.amount).toFixed(2)}
+                    </span>
+                  </header>
                   
                   <div className="expense-details">
                     <div className="expense-detail">
                       <span className="detail-label">Date</span>
-                      <span className="detail-value">{new Date(item.date).toLocaleDateString()}</span>
+                      <span className="detail-value">
+                        <time dateTime={item.date}>
+                          {new Date(item.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </time>
+                      </span>
                     </div>
                     
                     <div className="expense-detail">
@@ -300,16 +351,27 @@ const Display = () => {
                   </div>
                   
                   <div className="expense-actions">
-                    <button onClick={() => handleEdit(index)} className="btn btn-edit">
+                    <button 
+                      onClick={() => handleEdit(index)} 
+                      className="btn btn-edit"
+                      aria-label={`Edit expense: ${item.name}`}
+                      aria-describedby={`edit-help-${index}`}
+                    >
                       Edit
                     </button>
-                    <button onClick={() => handleRemove(index)} className="btn btn-delete">
+                    
+                    <button 
+                      onClick={() => handleRemove(index)} 
+                      className="btn btn-delete"
+                      aria-label={`Delete expense: ${item.name}`}
+                      aria-describedby={`delete-help-${index}`}
+                    >
                       Delete
                     </button>
                   </div>
                 </>
               )}
-            </div>
+            </article>
           ))}
         </div>
       )}

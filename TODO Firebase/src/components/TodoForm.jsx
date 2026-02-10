@@ -1,83 +1,63 @@
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useState } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db, auth } from '../config/firebase/firebaseconfig';
+import '../index.css';
 
-const schema = yup.object({
-  title: yup.string().required('Title is required'),
-  description: yup.string().required('Description is required')
-});
+const TodoForm = () => {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-const TodoForm = ({ onSubmit, initialData = null, onCancel = null }) => {
-  const [loading, setLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: initialData || { title: '', description: '' }
-  });
-
-  const handleFormSubmit = async (data) => {
-    setLoading(true);
+  const onSubmit = async (data) => {
     try {
-      await onSubmit(data);
-      if (!initialData) {
-        reset();
-      }
+      await addDoc(collection(db, 'todos'), {
+        title: data.title,
+        description: data.description,
+        userId: auth.currentUser.uid,
+        createdAt: new Date(),
+        completed: false
+      });
+      reset();
     } catch (error) {
-      console.error('Error submitting todo:', error);
+      console.error('Error adding todo:', error);
+      alert('Error adding todo');
     }
-    setLoading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <div className="form-group">
-        <label className="form-label">Title</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Enter todo title"
-          {...register('title')}
-        />
-        {errors.title && <span className="error-message">{errors.title.message}</span>}
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Description</label>
-        <textarea
-          className="form-textarea"
-          placeholder="Enter todo description"
-          {...register('description')}
-        />
-        {errors.description && <span className="error-message">{errors.description.message}</span>}
-      </div>
-
-      <div className="todo-actions">
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="btn btn-primary"
-          style={{ width: 'auto' }}
-        >
-          {loading ? 'Saving...' : (initialData ? 'Update Todo' : 'Add Todo')}
-        </button>
+    <div className="card">
+      <h3>Add New Todo</h3>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="form-group">
+          <input
+            type="text"
+            placeholder="Todo Title"
+            {...register('title', { 
+              required: 'Title is required',
+              minLength: {
+                value: 3,
+                message: 'Title must be at least 3 characters'
+              }
+            })}
+          />
+          {errors.title && <p className="error">{errors.title.message}</p>}
+        </div>
         
-        {onCancel && (
-          <button 
-            type="button" 
-            onClick={onCancel}
-            className="btn btn-secondary"
-          >
-            Cancel
-          </button>
-        )}
-      </div>
-    </form>
+        <div className="form-group">
+          <textarea
+            placeholder="Todo Description"
+            {...register('description', { 
+              required: 'Description is required',
+              minLength: {
+                value: 5,
+                message: 'Description must be at least 5 characters'
+              }
+            })}
+          />
+          {errors.description && <p className="error">{errors.description.message}</p>}
+        </div>
+        
+        <button className="btn-primary" type="submit">Add Todo</button>
+      </form>
+    </div>
   );
 };
 

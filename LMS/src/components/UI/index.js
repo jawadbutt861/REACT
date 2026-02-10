@@ -5,3 +5,5 @@ export { default as ProgressBar } from './ProgressBar';
 export { default as Badge } from './Badge';
 export { default as Toast } from './Toast';
 export { default as ToastContainer } from './ToastContainer';
+export { default as ReadMore } from './ReadMore';
+export { default as ConfirmDialog } from './ConfirmDialog';

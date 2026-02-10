@@ -3,11 +3,18 @@ import {db} from '../../../config/firebase/firebaseconfig'
 import { collection, query, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { Link } from 'react-router';
 import { showSuccess, showError, showWarning } from '../../../utils/toast';
+import { ReadMore, ConfirmDialog } from '../../../components/UI';
+import { cascadeDeleteCourse, getDeletionImpact, generateDeletionMessage } from '../../../utils/cascadeDelete';
 
 const Courses = () => {
    const [data,setData] = useState([]);
    const [loading, setLoading] = useState(false);
    const [fetchLoading, setFetchLoading] = useState(true);
+   const [deleteDialog, setDeleteDialog] = useState({
+     isOpen: false,
+     course: null,
+     impact: null
+   });
   
     useEffect(() => {
       getData();
@@ -33,20 +40,37 @@ const Courses = () => {
     }
 
     const deleteCourse = async (courseId, courseName) => {
-      if (window.confirm(`Are you sure you want to delete "${courseName}"?`)) {
-        setLoading(true);
-        try {
-          await deleteDoc(doc(db, "course", courseId));
-          showSuccess(`Course "${courseName}" deleted successfully!`);
-          getData();
-        } catch (error) {
-          console.error("Error deleting course:", error);
-          showError("Failed to delete course. Please try again.");
-        } finally {
-          setLoading(false);
-        }
+      try {
+        // Get deletion impact
+        const impact = await getDeletionImpact('course', courseId);
+        
+        // Show confirmation dialog
+        setDeleteDialog({
+          isOpen: true,
+          course: { id: courseId, name: courseName },
+          impact
+        });
+      } catch (error) {
+        console.error("Error getting deletion impact:", error);
+        showError("Failed to analyze deletion impact. Please try again.");
       }
-    }
+    };
+
+    const handleConfirmDelete = async () => {
+      const { course } = deleteDialog;
+      
+      try {
+        // Perform cascade deletion
+        await cascadeDeleteCourse(course.id);
+        
+        showSuccess(`Course "${course.name}" and all related data deleted successfully!`);
+        getData(); // Refresh the list
+      } catch (error) {
+        console.error("Error deleting course:", error);
+        showError("Failed to delete course. Please try again.");
+        throw error; // Re-throw to let ConfirmDialog handle loading state
+      }
+    };
 
     const CourseCard = ({ course }) => (
       <div className="bg-white rounded-xl shadow-sm border card-hover p-6" style={{ borderColor: 'var(--border)' }}>
@@ -55,9 +79,12 @@ const Courses = () => {
             <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-heading)' }}>
               {course.name}
             </h3>
-            <p className="text-sm line-clamp-2" style={{ color: 'var(--text-muted)' }}>
-              {course.description}
-            </p>
+            <ReadMore 
+              text={course.description}
+              maxLength={120}
+              className="text-sm"
+              style={{ color: 'var(--text-muted)' }}
+            />
           </div>
           <button
             onClick={() => deleteCourse(course.id, course.name)}
@@ -166,6 +193,20 @@ const Courses = () => {
             ))}
           </div>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <ConfirmDialog
+          isOpen={deleteDialog.isOpen}
+          onClose={() => setDeleteDialog({ isOpen: false, course: null, impact: null })}
+          onConfirm={handleConfirmDelete}
+          title="Delete Course"
+          message={deleteDialog.impact && deleteDialog.course 
+            ? generateDeletionMessage(deleteDialog.impact, deleteDialog.course.name)
+            : "Are you sure you want to delete this course?"
+          }
+          confirmText="Delete Course"
+          type="danger"
+        />
       </div>
     </div>
   )

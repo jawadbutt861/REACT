@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react'
 import { db } from '../../config/firebase/firebaseconfig'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { useSelector } from 'react-redux';
+import { getCourseProgress, completeLesson } from '../../utils/progressTracker';
+import { showSuccess, showError } from '../../utils/toast';
+import { ReadMore } from '../../components/UI';
 
 const MyCourse = () => {
   const [myCourses, setMyCourses] = useState([]);
+  const [coursesWithProgress, setCoursesWithProgress] = useState([]);
   const [loading, setLoading] = useState(true);
   const { uid } = useSelector((state) => state.auth);
 
@@ -30,6 +34,47 @@ const MyCourse = () => {
         });
         
         setMyCourses(coursesList);
+
+        // Get progress data and full course details for each course
+        const coursesWithProgressData = await Promise.all(
+          coursesList.map(async (course) => {
+            // Get progress data
+            const progressData = await getCourseProgress(uid, course.courseId);
+            
+            // Get full course details including description
+            try {
+              const courseDoc = await getDocs(query(collection(db, "course")));
+              let courseDetails = {};
+              
+              courseDoc.forEach((doc) => {
+                if (doc.id === course.courseId) {
+                  courseDetails = doc.data();
+                }
+              });
+              
+              return {
+                ...course,
+                description: courseDetails.description || 'No description available',
+                progress: progressData.progress,
+                status: progressData.status,
+                completedLessons: progressData.completedLessons?.length || 0,
+                totalLessons: progressData.totalLessons || 10
+              };
+            } catch (error) {
+              console.error('Error fetching course details:', error);
+              return {
+                ...course,
+                description: 'No description available',
+                progress: progressData.progress,
+                status: progressData.status,
+                completedLessons: progressData.completedLessons?.length || 0,
+                totalLessons: progressData.totalLessons || 10
+              };
+            }
+          })
+        );
+
+        setCoursesWithProgress(coursesWithProgressData);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
@@ -40,11 +85,36 @@ const MyCourse = () => {
     getMyCourses();
   }, [uid]);
 
+  // Handle lesson completion (demo functionality)
+  const handleLessonComplete = async (courseId) => {
+    try {
+      const randomLessonId = Math.floor(Math.random() * 10) + 1;
+      const newProgress = await completeLesson(uid, courseId, randomLessonId);
+      
+      // Update local state
+      setCoursesWithProgress(prev => 
+        prev.map(course => 
+          course.courseId === courseId 
+            ? { 
+                ...course, 
+                progress: newProgress,
+                status: newProgress === 100 ? 'completed' : 'in_progress',
+                completedLessons: course.completedLessons + 1
+              }
+            : course
+        )
+      );
+      
+      showSuccess('Lesson completed! Progress updated.');
+    } catch (error) {
+      console.error('Error completing lesson:', error);
+      showError('Failed to update progress. Please try again.');
+    }
+  };
+
   const CourseCard = ({ course, index }) => {
-    // Mock progress calculation
-    const progress = Math.floor(Math.random() * 100);
-    const isCompleted = progress === 100;
-    const isInProgress = progress > 0 && progress < 100;
+    const isCompleted = course.status === 'completed';
+    const isInProgress = course.status === 'in_progress';
     
     return (
       <div className="bg-white rounded-xl shadow-sm border card-hover p-6" style={{ borderColor: 'var(--border)' }}>
@@ -76,17 +146,28 @@ const MyCourse = () => {
           {course.courseName}
         </h3>
 
+        <ReadMore 
+          text={course.description}
+          maxLength={120}
+          className="text-sm mb-4"
+          style={{ color: 'var(--text-muted)' }}
+        />
+
         {/* Progress Bar */}
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Progress</span>
-            <span className="text-sm font-medium" style={{ color: 'var(--text-body)' }}>{progress}%</span>
+            <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              Progress ({course.completedLessons}/{course.totalLessons} lessons)
+            </span>
+            <span className="text-sm font-medium" style={{ color: 'var(--text-body)' }}>
+              {course.progress}%
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
               className="h-2 rounded-full progress-bar" 
               style={{ 
-                width: `${progress}%`,
+                width: `${course.progress}%`,
                 backgroundColor: isCompleted ? 'var(--success)' : 'var(--progress)'
               }}
             ></div>
@@ -108,8 +189,10 @@ const MyCourse = () => {
             }}
             onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary-hover)'}
             onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--primary)'}
+            onClick={() => !isCompleted && handleLessonComplete(course.courseId)}
+            disabled={isCompleted}
           >
-            {isCompleted ? 'Review' : 'Continue'}
+            {isCompleted ? 'Completed' : 'Complete Lesson'}
           </button>
         </div>
       </div>
@@ -186,7 +269,7 @@ const MyCourse = () => {
                   </div>
                   <div>
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Total Courses</p>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--text-heading)' }}>{myCourses.length}</p>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--text-heading)' }}>{coursesWithProgress.length}</p>
                   </div>
                 </div>
               </div>
@@ -201,7 +284,7 @@ const MyCourse = () => {
                   <div>
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Completed</p>
                     <p className="text-2xl font-bold" style={{ color: 'var(--text-heading)' }}>
-                      {Math.floor(myCourses.length * 0.3)}
+                      {coursesWithProgress.filter(c => c.status === 'completed').length}
                     </p>
                   </div>
                 </div>
@@ -217,7 +300,7 @@ const MyCourse = () => {
                   <div>
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>In Progress</p>
                     <p className="text-2xl font-bold" style={{ color: 'var(--text-heading)' }}>
-                      {Math.ceil(myCourses.length * 0.7)}
+                      {coursesWithProgress.filter(c => c.status === 'in_progress').length}
                     </p>
                   </div>
                 </div>
@@ -226,7 +309,7 @@ const MyCourse = () => {
 
             {/* Courses Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {myCourses.map((course, index) => (
+              {coursesWithProgress.map((course, index) => (
                 <CourseCard key={course.id} course={course} index={index} />
               ))}
             </div>
