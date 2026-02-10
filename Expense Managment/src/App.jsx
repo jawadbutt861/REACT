@@ -1,78 +1,72 @@
-import { useState } from "react";
-import Form from "../component/Form";
-import Display from "../component/Display";
-import Total from "./component/Total";
+import React, { useState } from 'react'
+import Display from './components/Display'
+import Form from './components/Form'
+import Total from './components/Total'
+import Dashboard from './components/dashboard/Dashboard'
+import { ThemeToggle } from './design-system/index.js'
+import './index.css'
 
-function Home() {
-  const [expenses, setExpenses] = useState([]);
-  const [editExpense, setEditExpense] = useState(null);
-  const [category, setCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("date");
-
-  // ADD
-  const onAddExpense = (expense) => {
-    setExpenses((prev) => [...prev, { ...expense, id: Date.now() }]);
-  };
-
-  // DELETE
-  const onDeleteExpense = (id) => {
-    setExpenses((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  // EDIT (select)
-  const onEditExpense = (expense) => {
-    setEditExpense(expense);
-  };
-
-  // UPDATE
-  const onUpdateExpense = (updatedExpense) => {
-    setExpenses((prev) =>
-      prev.map((item) =>
-        item.id === updatedExpense.id ? updatedExpense : item
-      )
-    );
-    setEditExpense(null);
-  };
-
-  // FILTER
-  const filtered =
-    category === "all"
-      ? expenses
-      : expenses.filter((e) => e.category === category);
-
-  // SORT
-  const sorted = [...filtered].sort((a, b) => {
-    if (sortBy === "amount") return b.amount - a.amount;
-    return new Date(b.date) - new Date(a.date);
-  });
-
-  // TOTAL
-  const total = sorted.reduce(
-    (sum, item) => sum + Number(item.amount),
-    0
-  );
-
+const App = () => {
+  const [activeTab, setActiveTab] = useState('dashboard')
+  
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'expenses', label: 'Expenses', icon: '💰' },
+    { id: 'add', label: 'Add Expense', icon: '➕' },
+  ]
+  
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard />
+      case 'expenses':
+        return (
+          <>
+            <Display />
+            <Total />
+          </>
+        )
+      case 'add':
+        return <Form />
+      default:
+        return <Dashboard />
+    }
+  }
+  
   return (
-    <>
-      <h1>Expense App (Props + Lift State Up)</h1>
-
-      <Form
-        onAddExpense={onAddExpense}
-        onUpdateExpense={onUpdateExpense}
-        editExpense={editExpense}
-      />
-
-      <Total total={total} />
-
-      <Display
-        expenses={sorted}
-        onDelete={onDeleteExpense}
-        onEdit={onEditExpense}
-        onCategoryChange={setCategory}
-        onSortChange={setSortBy}
-      />
-    </>
-  );
+    <div className="app-container">
+      <header className="app-header">
+        <div className="app-header-content">
+          <div className="app-header-text">
+            <h1 className="app-title">Expense Management System</h1>
+            <p className="app-subtitle">Track, manage, and analyze your expenses efficiently</p>
+          </div>
+          <div className="app-header-controls">
+            <ThemeToggle size="sm" />
+          </div>
+        </div>
+      </header>
+      
+      <nav className="app-navigation">
+        <div className="nav-tabs">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              className={`nav-tab ${activeTab === tab.id ? 'nav-tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="nav-tab__icon">{tab.icon}</span>
+              <span className="nav-tab__label">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+      
+      <main className="app-main">
+        {renderContent()}
+      </main>
+    </div>
+  )
 }
 
-export default Home;
+export default App

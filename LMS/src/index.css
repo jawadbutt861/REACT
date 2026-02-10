@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+/* LMS Portal Custom Styles */
+:root {
+  /* Primary Colors (Trust + Learning) */
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  
+  /* Background Colors (Clean & Calm) */
+  --bg-main: #F8FAFC;
+  --bg-card: #FFFFFF;
+  
+  /* Text Colors (Readability) */
+  --text-heading: #0F172A;
+  --text-body: #334155;
+  --text-muted: #64748B;
+  
+  /* Status Colors */
+  --success: #16A34A;
+  --progress: #22C55E;
+  --warning: #F59E0B;
+  --error: #DC2626;
+  
+  /* Borders */
+  --border: #E2E8F0;
+  
+  /* Admin Sidebar */
+  --sidebar-dark: #020617;
+  --sidebar-text: #F8FAFC;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Smooth transitions for better feel */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Focus styles for accessibility */
+.focus-ring:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Progress bar animations */
+.progress-bar {
+  transition: width 0.3s ease-in-out;
+}
+
+/* Card hover effects */
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Button loading state */
+.btn-loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Toast notifications - ensure they're always visible */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 100%;
+  max-width: 28rem;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.toast-container > * {
+  pointer-events: auto;
+}
+
+/* Mobile responsive toasts */
+@media (max-width: 640px) {
+  .toast-container {
+    top: 0.5rem;
+    max-width: calc(100vw - 2rem);
+    padding: 0 1rem;
+  }
+}
+
+/* Ensure toasts are above everything */
+.toast-notification {
+  position: relative;
+  z-index: 10000;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Toast animation improvements */
+.toast-enter {
+  transform: translateY(-100%) scale(0.95);
+  opacity: 0;
+}
+
+.toast-enter-active {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  transition: all 0.3s ease-out;
+}
+
+.toast-exit {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.toast-exit-active {
+  transform: translateY(-20px) scale(0.95);
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
