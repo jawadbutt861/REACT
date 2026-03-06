@@ -71,16 +71,6 @@ function Header() {
                 )}
               </Link>
             </div>
-            
-            {/* Mobile Cart Icon */}
-            <Link to="/cart" className="lg:hidden relative shrink-0">
-              <FontAwesomeIcon icon={faShoppingCart} className="text-xl sm:text-2xl text-gray-600" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
           </div>
         </div>
       </div>
