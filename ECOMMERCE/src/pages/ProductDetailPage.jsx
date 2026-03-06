@@ -58,15 +58,15 @@ function ProductDetailPage() {
       </div>
 
       {/* Product Detail Section */}
-      <div className="py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-6 mb-8">
+      <div className="py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 mb-6 sm:mb-8">
             {/* Left - Images */}
-            <div className="w-96">
-              <div className="bg-white border border-gray-200 rounded p-4 mb-4">
-                <img src={productImages[selectedImage]} alt="Product" className="w-full h-96 object-contain" />
+            <div className="w-full lg:w-96">
+              <div className="bg-white border border-gray-200 rounded p-3 sm:p-4 mb-4">
+                <img src={productImages[selectedImage]} alt="Product" className="w-full h-64 sm:h-80 lg:h-96 object-contain" />
               </div>
-              <div className="grid grid-cols-6 gap-2">
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                 {productImages.map((img, index) => (
                   <div 
                     key={index} 
@@ -141,8 +141,8 @@ function ProductDetailPage() {
             </div>
 
             {/* Right - Supplier Info */}
-            <div className="w-80">
-              <div className="bg-white border border-gray-200 rounded p-6 mb-4">
+            <div className="w-full lg:w-80">
+              <div className="bg-white border border-gray-200 rounded p-4 sm:p-6 mb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">R</div>
                   <div>
@@ -289,9 +289,9 @@ function ProductDetailPage() {
           </div>
 
           {/* Related Products */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-6">Related products</h2>
-            <div className="grid grid-cols-6 gap-4">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Related products</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {relatedProducts.map(relProduct => (
                 <Link to={`/product/${relProduct.id}`} key={relProduct.id} className="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
                   <img src={relProduct.image} alt={relProduct.name} className="w-full h-32 object-contain mb-3" />
@@ -303,12 +303,12 @@ function ProductDetailPage() {
           </div>
 
           {/* Discount Banner */}
-          <div className="bg-linear-to-r from-blue-500 to-blue-600 rounded-lg p-8 flex justify-between items-center text-white">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">Super discount on more than 100 USD</h2>
-              <p>Have you ever finally just write dummy info</p>
+          <div className="bg-linear-to-r from-blue-500 to-blue-600 rounded-lg p-4 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-white">
+            <div className="text-center sm:text-left">
+              <h2 className="text-lg sm:text-2xl font-bold mb-2">Super discount on more than 100 USD</h2>
+              <p className="text-sm sm:text-base">Have you ever finally just write dummy info</p>
             </div>
-            <button className="bg-orange-500 text-white px-8 py-3 rounded hover:bg-orange-600 transition">Shop now</button>
+            <button className="bg-orange-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded hover:bg-orange-600 transition whitespace-nowrap">Shop now</button>
           </div>
         </div>
       </div>

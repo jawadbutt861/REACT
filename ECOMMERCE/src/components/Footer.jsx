@@ -11,27 +11,27 @@ function Footer() {
   return (
     <>
       {/* Newsletter */}
-      <section className="bg-gray-200 py-12">
+      <section className="bg-gray-200 py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-gray-800 text-2xl font-semibold mb-2">Subscribe on our newsletter</h2>
-          <p className="text-gray-600 mb-6">Get daily news on upcoming offers from many suppliers all over the world</p>
-          <div className="flex gap-2 max-w-md mx-auto">
+          <h2 className="text-gray-800 text-xl sm:text-2xl font-semibold mb-2">Subscribe on our newsletter</h2>
+          <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Get daily news on upcoming offers from many suppliers all over the world</p>
+          <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
             <input 
               type="email" 
               placeholder="Email" 
-              className="flex-1 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="flex-1 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
             />
-            <button className="bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded hover:from-blue-700 hover:to-blue-800 transition">
+            <button className="bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-2 rounded hover:from-blue-700 hover:to-blue-800 transition whitespace-nowrap">
               Subscribe
             </button>
           </div>
         </div>
       </section>
 
-      <footer className="bg-white border-t border-gray-200 py-8">
+      <footer className="bg-white border-t border-gray-200 py-6 sm:py-8">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-6 gap-8 mb-8">
-            <div className="col-span-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8 mb-6 sm:mb-8">
+            <div className="col-span-2 sm:col-span-3 lg:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                   <rect width="32" height="32" rx="6" fill="#4A90E2"/>
@@ -113,11 +113,11 @@ function Footer() {
             </div>
           </div>
           
-          <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-            <p className="text-gray-600 text-base">© 2023 Ecommerce.</p>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-200">
+            <p className="text-gray-600 text-sm sm:text-base">© 2023 Ecommerce.</p>
             <div className="flex items-center gap-2">
-              <img src={flagUS} alt="USA" className="w-6 h-auto" />
-              <span className="text-gray-600 text-base">English</span>
+              <img src={flagUS} alt="USA" className="w-5 sm:w-6 h-auto" />
+              <span className="text-gray-600 text-sm sm:text-base">English</span>
             </div>
           </div>
         </div>

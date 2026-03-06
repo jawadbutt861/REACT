@@ -14,7 +14,7 @@ function ProductGrid({ viewMode }) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {products.map(product => (
         <Link to={`/product/${product.id}`} key={product.id} className="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition group">
           <div className="relative mb-3">

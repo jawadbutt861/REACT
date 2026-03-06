@@ -58,11 +58,11 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <section className="py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-4">
+      <section className="py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Left Sidebar - Categories */}
-            <aside className="w-56 bg-white rounded-lg shadow-sm">
+            <aside className="hidden lg:block w-56 bg-white rounded-lg shadow-sm shrink-0">
               <ul className="py-2">
                 <li className="px-4 py-2.5 hover:bg-blue-50 cursor-pointer">
                   <Link to="/products" className="flex items-center gap-3 text-gray-700 hover:text-blue-600 text-sm">
@@ -114,20 +114,20 @@ function HomePage() {
 
             {/* Center Banner */}
             <div 
-              className="flex-1 rounded-lg overflow-hidden bg-cover bg-center relative h-100"
+              className="flex-1 rounded-lg overflow-hidden bg-cover bg-center relative h-64 sm:h-80 lg:h-100"
               style={{ backgroundImage: `url(${bannerBg})` }}
             >
-              <div className="absolute inset-0 flex flex-col justify-center px-12">
-                <h2 className="text-3xl font-bold text-gray-800 mb-1">Latest trending</h2>
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">Electronic items</h1>
-                <button className="bg-white text-gray-800 px-6 py-2 rounded-md hover:bg-gray-100 transition w-fit font-medium">
+              <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-1">Latest trending</h2>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">Electronic items</h1>
+                <button className="bg-white text-gray-800 px-4 sm:px-6 py-2 rounded-md hover:bg-gray-100 transition w-fit font-medium text-sm sm:text-base">
                   Learn more
                 </button>
               </div>
             </div>
 
             {/* Right Sidebar - User Actions */}
-            <aside className="w-56 flex flex-col gap-3">
+            <aside className="hidden lg:flex w-56 flex-col gap-3 shrink-0">
               <div className="bg-blue-50 rounded-lg p-4 flex items-start gap-3">
                 <div className="w-11 h-11 bg-blue-200 rounded-full flex items-center justify-center text-blue-600 font-semibold">
                   👤
@@ -159,35 +159,35 @@ function HomePage() {
       </section>
       
       {/* Deals and Offers Section */}
-      <section className="py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex justify-between items-start mb-6">
+      <section className="py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
               <div>
-                <h2 className="text-2xl font-bold mb-1">Deals and offers</h2>
-                <p className="text-gray-500 text-sm">Hygiene equipments</p>
+                <h2 className="text-xl sm:text-2xl font-bold mb-1">Deals and offers</h2>
+                <p className="text-gray-500 text-xs sm:text-sm">Hygiene equipments</p>
               </div>
-              <div className="flex gap-2">
-                <div className="bg-gray-500 text-white px-3 py-2 rounded text-center min-w-[60px]">
-                  <span className="block text-xl font-bold">04</span>
+              <div className="flex gap-1 sm:gap-2">
+                <div className="bg-gray-500 text-white px-2 sm:px-3 py-1 sm:py-2 rounded text-center min-w-[45px] sm:min-w-[60px]">
+                  <span className="block text-base sm:text-xl font-bold">04</span>
                   <small className="text-xs">Days</small>
                 </div>
-                <div className="bg-gray-500 text-white px-3 py-2 rounded text-center min-w-[60px]">
-                  <span className="block text-xl font-bold">13</span>
+                <div className="bg-gray-500 text-white px-2 sm:px-3 py-1 sm:py-2 rounded text-center min-w-[45px] sm:min-w-[60px]">
+                  <span className="block text-base sm:text-xl font-bold">13</span>
                   <small className="text-xs">Hour</small>
                 </div>
-                <div className="bg-gray-500 text-white px-3 py-2 rounded text-center min-w-[60px]">
-                  <span className="block text-xl font-bold">34</span>
+                <div className="bg-gray-500 text-white px-2 sm:px-3 py-1 sm:py-2 rounded text-center min-w-[45px] sm:min-w-[60px]">
+                  <span className="block text-base sm:text-xl font-bold">34</span>
                   <small className="text-xs">Min</small>
                 </div>
-                <div className="bg-gray-500 text-white px-3 py-2 rounded text-center min-w-[60px]">
-                  <span className="block text-xl font-bold">56</span>
+                <div className="bg-gray-500 text-white px-2 sm:px-3 py-1 sm:py-2 rounded text-center min-w-[45px] sm:min-w-[60px]">
+                  <span className="block text-base sm:text-xl font-bold">56</span>
                   <small className="text-xs">Sec</small>
                 </div>
               </div>
             </div>
             
-            <div className="grid grid-cols-5 ">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-0">
               <div className="border border-gray-200  p-4 hover:shadow-lg transition text-center">
                 <div className="bg-gray-50 rounded-lg p-4 mb-3 h-40 flex items-center justify-center">
                   <img src={dealImg4} alt="Smart watches" className="max-w-full max-h-full object-contain" />
@@ -232,117 +232,117 @@ function HomePage() {
         </div>
       </section>
       {/* Home and Outdoor Section */}
-      <section className="py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="grid grid-cols-5 gap-0">
+      <section className="py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0">
               {/* Left Banner */}
               <div 
-                className="rounded-lg p-6 flex flex-col justify-between bg-cover bg-center relative overflow-hidden row-span-2 border-r border-b border-gray-200"
+                className="rounded-lg p-4 sm:p-6 flex flex-col justify-between bg-cover bg-center relative overflow-hidden col-span-2 sm:col-span-3 lg:col-span-1 lg:row-span-2 border-r border-b border-gray-200 min-h-[200px] sm:min-h-[250px]"
                 style={{ backgroundImage: `url(${homeOutdoorBg})` }}
               >
                 <div className="relative z-10">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-16">Home and<br/>outdoor</h2>
-                  <button className="bg-white text-gray-800 px-5 py-2 rounded hover:bg-gray-100 transition font-medium text-sm">
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-8 sm:mb-16">Home and<br/>outdoor</h2>
+                  <button className="bg-white text-gray-800 px-4 sm:px-5 py-1.5 sm:py-2 rounded hover:bg-gray-100 transition font-medium text-xs sm:text-sm">
                     Source now
                   </button>
                 </div>
               </div>
               
               {/* Product Cards - Row 1 */}
-              <div className="bg-gray-50 border-r border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Soft chairs</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Soft chairs</p>
                     <p className="text-xs text-gray-500">From<br/>USD 19</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg1} alt="Soft chairs" className="h-16 object-contain" />
+                    <img src={homeImg1} alt="Soft chairs" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Sofa & chair</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Sofa & chair</p>
                     <p className="text-xs text-gray-500">From<br/>USD 19</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg2} alt="Sofa & chair" className="h-16 object-contain" />
+                    <img src={homeImg2} alt="Sofa & chair" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition hidden sm:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Kitchen dishes</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Kitchen dishes</p>
                     <p className="text-xs text-gray-500">From<br/>USD 19</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg3} alt="Kitchen dishes" className="h-16 object-contain" />
+                    <img src={homeImg3} alt="Kitchen dishes" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition hidden lg:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Smart watches</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Smart watches</p>
                     <p className="text-xs text-gray-500">From<br/>USD 19</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg4} alt="Smart watches" className="h-16 object-contain" />
+                    <img src={homeImg4} alt="Smart watches" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
               {/* Product Cards - Row 2 */}
-              <div className="bg-gray-50 border-r border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Kitchen mixer</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Kitchen mixer</p>
                     <p className="text-xs text-gray-500">From<br/>USD 100</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg5} alt="Kitchen mixer" className="h-16 object-contain" />
+                    <img src={homeImg5} alt="Kitchen mixer" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Blenders</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Blenders</p>
                     <p className="text-xs text-gray-500">From<br/>USD 39</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg6} alt="Blenders" className="h-16 object-contain" />
+                    <img src={homeImg6} alt="Blenders" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-gray-200 p-3 sm:p-4 hover:shadow-md transition hidden sm:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Home appliance</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Home appliance</p>
                     <p className="text-xs text-gray-500">From<br/>USD 19</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg7} alt="Home appliance" className="h-16 object-contain" />
+                    <img src={homeImg7} alt="Home appliance" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 p-3 sm:p-4 hover:shadow-md transition hidden lg:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Coffee maker</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Coffee maker</p>
                     <p className="text-xs text-gray-500">From<br/>USD 10</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={homeImg8} alt="Coffee maker" className="h-16 object-contain" />
+                    <img src={homeImg8} alt="Coffee maker" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
@@ -351,117 +351,117 @@ function HomePage() {
         </div>
       </section>
       {/* Consumer Electronics Section */}
-      <section className="py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="grid grid-cols-5 gap-0">
+      <section className="py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0">
               {/* Left Banner */}
               <div 
-                className="rounded-lg p-6 flex flex-col justify-between bg-cover bg-center relative overflow-hidden row-span-2 border-r border-b border-gray-200"
+                className="rounded-lg p-4 sm:p-6 flex flex-col justify-between bg-cover bg-center relative overflow-hidden col-span-2 sm:col-span-3 lg:col-span-1 lg:row-span-2 border-r border-b border-gray-200 min-h-[200px] sm:min-h-[250px]"
                 style={{ backgroundImage: `url(${consumerBg})` }}
               >
                 <div className="relative z-10">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-16">Consumer<br/>electronics and<br/>gadgets</h2>
-                  <button className="bg-white text-gray-800 px-5 py-2 rounded hover:bg-gray-100 transition font-medium text-sm">
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-8 sm:mb-16">Consumer<br/>electronics and<br/>gadgets</h2>
+                  <button className="bg-white text-gray-800 px-4 sm:px-5 py-1.5 sm:py-2 rounded hover:bg-gray-100 transition font-medium text-xs sm:text-sm">
                     Source now
                   </button>
                 </div>
               </div>
               
               {/* Product Cards - Row 1 */}
-              <div className="bg-gray-50 border-r border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Smart watches</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Smart watches</p>
                     <p className="text-xs text-gray-500">From<br/>USD 19</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg1} alt="Smart watches" className="h-16 object-contain" />
+                    <img src={consumerImg1} alt="Smart watches" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Cameras</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Cameras</p>
                     <p className="text-xs text-gray-500">From<br/>USD 89</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg2} alt="Cameras" className="h-16 object-contain" />
+                    <img src={consumerImg2} alt="Cameras" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition hidden sm:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Headphones</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Headphones</p>
                     <p className="text-xs text-gray-500">From<br/>USD 10</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg3} alt="Headphones" className="h-16 object-contain" />
+                    <img src={consumerImg3} alt="Headphones" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-b border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-b border-gray-200 p-3 sm:p-4 hover:shadow-md transition hidden lg:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Smart watches</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Smart watches</p>
                     <p className="text-xs text-gray-500">From<br/>USD 90</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg4} alt="Smart watches" className="h-16 object-contain" />
+                    <img src={consumerImg4} alt="Smart watches" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
               {/* Product Cards - Row 2 */}
-              <div className="bg-gray-50 border-r border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Gaming set</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Gaming set</p>
                     <p className="text-xs text-gray-500">From<br/>USD 35</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg5} alt="Gaming set" className="h-16 object-contain" />
+                    <img src={consumerImg5} alt="Gaming set" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-gray-200 p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Laptops & PC</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Laptops & PC</p>
                     <p className="text-xs text-gray-500">From<br/>USD 340</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg6} alt="Laptops & PC" className="h-16 object-contain" />
+                    <img src={consumerImg6} alt="Laptops & PC" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 border-r border-gray-200 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 border-r border-gray-200 p-3 sm:p-4 hover:shadow-md transition hidden sm:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Smartphones</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Smartphones</p>
                     <p className="text-xs text-gray-500">From<br/>USD 19</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg7} alt="Smartphones" className="h-16 object-contain" />
+                    <img src={consumerImg7} alt="Smartphones" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 hover:shadow-md transition">
-                <div className="flex flex-col h-full justify-between">
+              <div className="bg-gray-50 p-3 sm:p-4 hover:shadow-md transition hidden lg:block">
+                <div className="flex flex-col h-full justify-between min-h-[120px] sm:min-h-[140px]">
                   <div className="mb-2">
-                    <p className="font-medium text-gray-800 text-sm mb-1">Electric kettle</p>
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm mb-1">Electric kettle</p>
                     <p className="text-xs text-gray-500">From<br/>USD 240</p>
                   </div>
                   <div className="flex justify-end">
-                    <img src={consumerImg8} alt="Electric kettle" className="h-16 object-contain" />
+                    <img src={consumerImg8} alt="Electric kettle" className="h-12 sm:h-16 object-contain" />
                   </div>
                 </div>
               </div>
@@ -470,37 +470,37 @@ function HomePage() {
         </div>
       </section>
       {/* Quote Request Section */}
-      <div className='flex justify-center items-center'>
+      <div className='flex justify-center items-center py-4 sm:py-6'>
       <section 
-        className="py-12 bg-cover bg-center relative w-300 rounded-lg"
+        className="bg-cover bg-center relative w-full max-w-7xl mx-2 sm:mx-4 rounded-lg overflow-hidden"
         style={{ backgroundImage: `url(${quotesBg})` }}
       >
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-8 items-center">
-            <div className="flex-1 text-white">
-              <h2 className="text-4xl font-bold mb-4">An easy way to send<br/>requests to all suppliers</h2>
-              <p className="text-lg opacity-90">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>
+        <div className="px-4 sm:px-6 py-8 sm:py-12">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-center">
+            <div className="flex-1 text-white text-center lg:text-left">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">An easy way to send<br className="hidden sm:block"/>requests to all suppliers</h2>
+              <p className="text-sm sm:text-base lg:text-lg opacity-90">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p>
             </div>
-            <div className="w-96 bg-white rounded-lg p-6 shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">Send quote to suppliers</h3>
-              <input type="text" placeholder="What item you need?" className="w-full px-4 py-2 border border-gray-300 rounded mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-              <textarea placeholder="Type more details" className="w-full px-4 py-2 border border-gray-300 rounded mb-3 h-24 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+            <div className="w-full lg:w-96 bg-white rounded-lg p-4 sm:p-6 shadow-lg">
+              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Send quote to suppliers</h3>
+              <input type="text" placeholder="What item you need?" className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded mb-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              <textarea placeholder="Type more details" className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded mb-3 h-20 sm:h-24 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
               <div className="flex gap-2 mb-4">
-                <input type="text" placeholder="Quantity" className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
-                <select className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <input type="text" placeholder="Quantity" className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <select className="px-3 sm:px-4 py-2 border border-gray-300 rounded text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400">
                   <option>Pcs</option>
                 </select>
               </div>
-              <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white py-3 rounded hover:from-blue-700 hover:to-blue-800 transition">Send inquiry</button>
+              <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white py-2.5 sm:py-3 rounded hover:from-blue-700 hover:to-blue-800 transition text-sm sm:text-base font-medium">Send inquiry</button>
             </div>
           </div>
         </div>
       </section>
       </div>
-      <section className="py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-semibold mb-6">Recommended items</h2>
-          <div className="grid grid-cols-5 gap-4">
+      <section className="py-4 sm:py-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Recommended items</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
             {[
               { img: recImg1, name: 'Product 1', price: '$10.30' },
               { img: recImg2, name: 'Product 2', price: '$9.99' },
@@ -523,10 +523,10 @@ function HomePage() {
         </div>
       </section>
       {/* Extra Services Section */}
-      <section className="py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-6">Our extra services</h2>
-          <div className="grid grid-cols-4 gap-4">
+      <section className="py-4 sm:py-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Our extra services</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="relative rounded-lg overflow-hidden group cursor-pointer h-64">
               <img src={serviceImg1} alt="Source from Industry Hubs" className="w-full h-full object-cover" />
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-linear-to-t from-black/60 to-transparent">
@@ -569,10 +569,10 @@ function HomePage() {
           </div>
         </div>
       </section>
-      <section className="py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-semibold mb-6">Suppliers by region</h2>
-          <div className="grid grid-cols-5 gap-4">
+      <section className="py-4 sm:py-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Suppliers by region</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
             <div className="bg-white border border-gray-200 rounded p-4 flex items-center gap-3 hover:shadow-md transition">
               <img src={flagAE} alt="UAE" className="w-8 h-auto" />
               <div>

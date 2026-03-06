@@ -20,7 +20,7 @@ function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-white border border-gray-200 rounded p-4 space-y-4">
+    <aside className="w-full lg:w-64 bg-white border border-gray-200 rounded p-4 space-y-4">
       {/* Category */}
       <div className="border-b border-gray-200 pb-4">
         <div className="flex justify-between items-center cursor-pointer mb-3" onClick={() => toggleSection('category')}>

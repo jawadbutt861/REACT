@@ -17,9 +17,9 @@ function ProductList({ viewMode }) {
   return (
     <div className="space-y-4">
       {products.slice(0, 8).map(product => (
-        <div key={product.id} className="bg-white border border-gray-200 rounded p-4 flex gap-4 hover:shadow-md transition">
-          <Link to={`/product/${product.id}`} className="relative shrink-0">
-            <img src={product.image} alt={product.name} className="w-48 h-48 object-contain" />
+        <div key={product.id} className="bg-white border border-gray-200 rounded p-3 sm:p-4 flex flex-col sm:flex-row gap-4 hover:shadow-md transition">
+          <Link to={`/product/${product.id}`} className="relative shrink-0 mx-auto sm:mx-0">
+            <img src={product.image} alt={product.name} className="w-full sm:w-48 h-48 object-contain" />
             <button className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow hover:bg-red-50 hover:text-red-500 transition" onClick={(e) => e.preventDefault()}>
               <FontAwesomeIcon icon={faHeart} />
             </button>

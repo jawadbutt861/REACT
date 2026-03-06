@@ -40,31 +40,31 @@ function CartPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="py-6">
-        <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-2xl font-semibold mb-6">My cart ({cartItems.length})</h1>
+      <div className="py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">My cart ({cartItems.length})</h1>
 
           {cartItems.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded p-12 text-center">
-              <FontAwesomeIcon icon={faShoppingCart} className="text-6xl text-gray-300 mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
-              <p className="text-gray-600 mb-6">Add some products to get started</p>
-              <Link to="/products" className="inline-block bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition">
+            <div className="bg-white border border-gray-200 rounded p-8 sm:p-12 text-center">
+              <FontAwesomeIcon icon={faShoppingCart} className="text-4xl sm:text-6xl text-gray-300 mb-4" />
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">Your cart is empty</h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-6">Add some products to get started</p>
+              <Link to="/products" className="inline-block bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition text-sm sm:text-base">
                 Continue Shopping
               </Link>
             </div>
           ) : (
-            <div className="flex gap-6">
+            <div className="flex flex-col lg:flex-row gap-6">
               {/* Cart Items */}
               <div className="flex-1">
                 <div className="bg-white border border-gray-200 rounded mb-4">
                   {cartItems.map(item => (
-                    <div key={item.id} className="flex gap-4 p-6 border-b border-gray-200 last:border-b-0">
-                      <Link to={`/product/${item.id}`}>
+                    <div key={item.id} className="flex flex-col sm:flex-row gap-4 p-4 sm:p-6 border-b border-gray-200 last:border-b-0">
+                      <Link to={`/product/${item.id}`} className="mx-auto sm:mx-0">
                         <img src={item.image} alt={item.name} className="w-32 h-32 object-contain" />
                       </Link>
                       
-                      <div className="flex-1">
+                      <div className="flex-1 text-center sm:text-left">
                         <Link to={`/product/${item.id}`}>
                           <h3 className="font-semibold mb-2 hover:text-blue-600">{item.name}</h3>
                         </Link>
@@ -111,7 +111,7 @@ function CartPage() {
                 </div>
 
               {/* Features */}
-              <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 sm:mb-8">
                 <div className="bg-white border border-gray-200 rounded p-4 flex gap-4">
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
                     <FontAwesomeIcon icon={faLock} className="text-gray-600 text-xl" />
@@ -142,9 +142,9 @@ function CartPage() {
               </div>
 
               {/* Saved for Later */}
-              <div className="bg-white border border-gray-200 rounded p-6">
-                <h2 className="text-xl font-semibold mb-4">You may also like</h2>
-                <div className="grid grid-cols-4 gap-4">
+              <div className="bg-white border border-gray-200 rounded p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold mb-4">You may also like</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {savedItems.map(item => (
                     <Link to={`/product/${item.id}`} key={item.id} className="border border-gray-200 rounded p-4 hover:shadow-md transition">
                       <img src={item.image} alt={item.name} className="w-full h-32 object-contain mb-3" />
@@ -157,8 +157,8 @@ function CartPage() {
             </div>
 
             {/* Cart Summary */}
-            <div className="w-96">
-              <div className="bg-white border border-gray-200 rounded p-6 sticky top-6">
+            <div className="w-full lg:w-96">
+              <div className="bg-white border border-gray-200 rounded p-4 sm:p-6 lg:sticky lg:top-6">
                 <div className="mb-6">
                   <label className="block text-sm font-medium mb-2">Have a coupon?</label>
                   <div className="flex gap-2">
